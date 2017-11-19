@@ -6,7 +6,7 @@ Currently supported File Storage Backend's
 * Azure File Storage
 * Azure Blob Storage
 
-
+![Stargate Screenshot](https://i.imgur.com/tLfHqxk.png)
 
 ### Installation
 
