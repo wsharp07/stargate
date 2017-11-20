@@ -20,6 +20,12 @@ Currently supported File Storage Backend's
 
 ### Configuration
 
+**Web**
+
+Set the `API_HOST` and `API_PORT` values in the `config/dev.env.js`
+
+**API**
+
 If you're using Azure storage you will need to create an environment variable with your Connection String.
 
 **Name:** stargate:azureStorageAccount
