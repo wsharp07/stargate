@@ -7,7 +7,7 @@
             id="fileUpload"
             name="fileUpload"
             type="file" 
-            :disabled="isSaving"
+            :disabled="isLoading"
             @change="fileUploadChange"
             v-validate="'required'" />
           
@@ -24,7 +24,7 @@
           </span>
           
         </label>
-        <a class="button" 
+        <a class="button" v-bind:class="{'is-loading': isLoading}" 
           @click="uploadClick">
           <span class="file-icon">
             <i class="fa fa-upload"></i>
@@ -50,6 +50,7 @@ export default {
     return {
       uploadError: null,
       fileToUpload: null,
+      isLoading: false,
       fileName: "Select a file to upload"
     };
   },
@@ -58,16 +59,22 @@ export default {
       // reset form to initial state
       this.fileToUpload = null;
       this.uploadError = null;
+      this.isLoading = false;
       this.fileName = "Select a file to upload";
     },
     save(formData) {
       let self = this;
+      self.isLoading = true;
       FileApi.upload(formData)
         .then(function(response) {
           Router.push({name: 'File View', params: { id: response.data.id }});
         })
         .catch(function(error) {
-          console.log(error);
+          console.log(error);          
+        })
+        // finally
+        .then(function() {
+          self.isLoading = false;
         });
     },
     fileUploadChange(e) {

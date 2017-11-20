@@ -10,7 +10,12 @@ import VeeValidate from 'vee-validate';
 require('./assets/sass/main.scss')
 
 Vue.config.productionTip = false
-Vue.use(VeeValidate);
+
+const veeConfig = {
+  events: 'input'
+};
+
+Vue.use(VeeValidate, veeConfig);
 
 const dict = {
   en: {
