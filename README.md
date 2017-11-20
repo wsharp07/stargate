@@ -40,5 +40,6 @@ You may need to restart the npm http server or Visual Studio to pick up environm
 
 * Unit Tests
 * Hosted Example
+* Host multiple files with the same name
 * Built in URL Shortner
 * Plugin Support
