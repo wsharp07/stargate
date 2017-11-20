@@ -1,5 +1,5 @@
 import axios from 'axios';
 
 export const HTTP = axios.create({
-  baseURL: `http://localhost:54115/api/`
+  baseURL: `http://${process.env.API_HOST}:${process.env.API_PORT}/api/`
 });
