@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Stargate.API.Data.Entities;
 using Stargate.API.Services;
 
@@ -9,12 +10,10 @@ namespace Stargate.API.Data.Repository
 {
     public class StargateRepository : IStargateRepository
     {
-        private readonly IUriShortener _shortener;
         private readonly StargateContext _context;
-        public StargateRepository(StargateContext context, IUriShortener shortener)
+        public StargateRepository(StargateContext context)
         {
             _context = context;
-            _shortener = shortener;
         }
 
         public IEnumerable<File> GetFiles()
@@ -22,19 +21,19 @@ namespace Stargate.API.Data.Repository
             return _context.Files;
         }
 
-        public File GetFileById(int id)
+        public Task<File> GetFileByIdAsync (int id)
         {
-            return _context.Files.SingleOrDefault(x => x.Id == id);
+            return _context.Files.SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        public File GetFileByFileName(string fileName)
+        public Task<File> GetFileByFileNameAsync (string fileName)
         {
-            return _context.Files.SingleOrDefault(x => x.FileName  == fileName);
+            return _context.Files.SingleOrDefaultAsync(x => x.FileName  == fileName);
         }
 
-        public File GetFileByShortUri(string shortUri)
+        public Task<File> GetFileByShortUriAsync(string shortUri)
         {
-            return _context.Files.SingleOrDefault(x => x.ShortUri == shortUri);
+            return _context.Files.SingleOrDefaultAsync(x => x.ShortUri == shortUri);
         }
 
         public async Task<int> AddFileAsync(File file)
@@ -44,13 +43,6 @@ namespace Stargate.API.Data.Repository
             await _context.Files.AddAsync(file);
             await _context.SaveChangesAsync();
             return file.Id;
-        }
-
-        public void SetShortUri(int id)
-        {
-            var file = GetFileById(id);
-            file.ShortUri = _shortener.GetShortUri(id);
-            _context.SaveChanges();
         }
     }
 }

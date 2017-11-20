@@ -52,7 +52,7 @@ namespace Stargate.API.Controllers
 
         // GET api/files/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace Stargate.API.Controllers
                 {
                     return BadRequest();
                 }
-                var dbFile = _repo.GetFileById(id);
+                var dbFile = await _repo.GetFileByIdAsync(id);
 
                 if (dbFile == null)
                 {
@@ -123,13 +123,13 @@ namespace Stargate.API.Controllers
 
         private async Task<int> UpdatePost(Data.Entities.File fileEntity)
         {
-            var existingFile = _repo.GetFileByFileName(fileEntity.FileName);
+            var existingFile = await _repo.GetFileByFileNameAsync(fileEntity.FileName);
 
             if (existingFile != null)
                 return existingFile.Id;
 
             await _repo.AddFileAsync(fileEntity);
-            _repo.SetShortUri(fileEntity.Id);
+
             return fileEntity.Id;
         }
     }
