@@ -28,9 +28,15 @@ Set the `API_HOST` and `API_PORT` values in the `config/dev.env.js`
 
 If you're using Azure storage you will need to create an environment variable with your Connection String.
 
-**Name:** stargate:azureStorageAccount
+`stargate:azureStorageAccount` : _Connection string from Azure_
 
-**Value:** _Connection string from Azure_
+```
+TIP: You can find your connection string from the "Access keys" menu option for your storage account
+```
+
+**_Troubleshooting_**
+
+You may need to restart the npm http server or Visual Studio to pick up environment variable/configuration changes.
 
 ### Roadmap
 
