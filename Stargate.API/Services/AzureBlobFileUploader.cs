@@ -20,8 +20,7 @@ namespace Stargate.API.Services
             _configuration = configuration;
         }
         public async Task<FileReference> UploadAsync(IFormFile file)
-        {
-            var response = new FileReference();
+        {   
             var storageAccountKey = _configuration[AZURE_KEY];
 
             if (storageAccountKey == null)
@@ -52,9 +51,12 @@ namespace Stargate.API.Services
             await blockBlob.UploadFromStreamAsync(fileStream);
             fileStream.Dispose();
 
-            response.FileName = file.FileName;
-            response.Uri = blockBlob.Uri.AbsoluteUri;
-            response.Success = true;
+            var response = new FileReference
+            {
+                FileName = file.FileName,
+                Uri = blockBlob.Uri.AbsoluteUri,
+                Success = true
+            };
             return response;
         }
     }

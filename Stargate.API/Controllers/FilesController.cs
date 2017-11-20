@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Stargate.API.Data.Repository;
+using Stargate.API.Models;
 using Stargate.API.Services;
 
 namespace Stargate.API.Controllers
@@ -45,7 +46,7 @@ namespace Stargate.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to get files: {ex}");
-                return BadRequest("Failed to get files");
+                return StatusCode(500, "Failed to get files");
             }
         }
 
@@ -53,18 +54,26 @@ namespace Stargate.API.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            if (id <= 0)
+            try
             {
-                return BadRequest();
-            }
-            var dbFile = _repo.GetFileById(id);
+                if (id <= 0)
+                {
+                    return BadRequest();
+                }
+                var dbFile = _repo.GetFileById(id);
 
-            if (dbFile == null)
+                if (dbFile == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(_mapper.Map<Data.Entities.File, FileViewModel>(dbFile));
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError($"Failed to get file '{id}': {ex}");
+                return StatusCode(500, $"Failed to get file '{id}'");
             }
-
-            return Ok(_mapper.Map<Data.Entities.File, FileViewModel>(dbFile));
         }
 
         // POST api/files
@@ -76,45 +85,52 @@ namespace Stargate.API.Controllers
                 if (file == null || file.Length == 0)
                     return BadRequest("No file was provided");
 
-                var result = await _fileUploader.UploadAsync(file);
+                var fileUploadResult = await _fileUploader.UploadAsync(file);
+
+                var fileEntity = CreateFile(file, fileUploadResult);
 
                 var response = new UploadResponseViewModel
                 {
                     Success = true,
-                    FileName = result.FileName,
-                    Uri = result.Uri
+                    FileName = fileEntity.FileName,
+                    Uri = fileEntity.ExternalUri
                 };
 
-                var fileEntity = new Data.Entities.File
-                {
-                    FileName = file.FileName,
-                    FileExtension = Path.GetExtension(file.FileName),
-                    ContentType = file.ContentType,
-                    ExternalUri = result.Uri,
-                    FileSizeBytes = file.Length
-                };
-
-
-                var existingFile = _repo.GetFileByFileName(file.FileName);
-
-                if (existingFile == null)
-                {
-                    await _repo.AddFileAsync(fileEntity);
-                    response.Id = fileEntity.Id;
-                    _repo.SetShortUri(response.Id);
-                }
-                else
-                {
-                    response.Id = existingFile.Id;
-                }
+                response.Id = await UpdatePost(fileEntity);
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, "An error occurred while trying to upload the file");
             }
+        }
+
+        private Data.Entities.File CreateFile(IFormFile file, FileReference reference)
+        {
+            var fileEntity = new Data.Entities.File
+            {
+                FileName = file.FileName,
+                FileExtension = Path.GetExtension(file.FileName),
+                ContentType = file.ContentType,
+                ExternalUri = reference.Uri,
+                FileSizeBytes = file.Length
+            };
+
+            return fileEntity;
+        }
+
+        private async Task<int> UpdatePost(Data.Entities.File fileEntity)
+        {
+            var existingFile = _repo.GetFileByFileName(fileEntity.FileName);
+
+            if (existingFile != null)
+                return existingFile.Id;
+
+            await _repo.AddFileAsync(fileEntity);
+            _repo.SetShortUri(fileEntity.Id);
+            return fileEntity.Id;
         }
     }
 }
