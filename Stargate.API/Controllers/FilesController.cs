@@ -58,13 +58,13 @@ namespace Stargate.API.Controllers
             {
                 if (id <= 0)
                 {
-                    return BadRequest();
+                    return BadRequest($"{nameof(id)} should be greater than 0");
                 }
                 var dbFile = await _repo.GetFileByIdAsync(id);
 
                 if (dbFile == null)
                 {
-                    return NotFound();
+                    return NotFound($"Unable to locate a file given id: '{id}'");
                 }
 
                 return Ok(_mapper.Map<Data.Entities.File, FileViewModel>(dbFile));
