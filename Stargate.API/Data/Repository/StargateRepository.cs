@@ -31,13 +31,19 @@ namespace Stargate.API.Data.Repository
             return _context.Files.SingleOrDefaultAsync(x => x.FileName  == fileName);
         }
 
-        public Task<File> GetFileByShortUriAsync(string shortUri)
-        {
-            return _context.Files.SingleOrDefaultAsync(x => x.ShortUri == shortUri);
-        }
-
+        /// <summary>
+        /// Add's a file to the database if does not exist. 
+        /// If it already exists this will return to you the existing file Id
+        /// </summary>
+        /// <param name="file">File Entity</param>
+        /// <returns></returns>
         public async Task<int> AddFileAsync(File file)
         {
+            var existingFile = await GetFileByFileNameAsync(file.FileName);
+
+            if (existingFile != null)
+                return existingFile.Id;
+
             file.CreatedAtUtc = DateTime.UtcNow;
 
             await _context.Files.AddAsync(file);

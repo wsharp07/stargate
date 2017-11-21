@@ -9,7 +9,6 @@ namespace Stargate.API.Data.Repository
         IEnumerable<File> GetFiles();
         Task<File> GetFileByIdAsync (int id);
         Task<File> GetFileByFileNameAsync (string fileName);
-        Task<File> GetFileByShortUriAsync (string shortUri);
         Task<int> AddFileAsync(File file);
     }
 }

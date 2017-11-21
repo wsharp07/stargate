@@ -96,7 +96,7 @@ namespace Stargate.API.Controllers
                     Uri = fileEntity.ExternalUri
                 };
 
-                response.Id = await UpdatePost(fileEntity);
+                response.Id = await _repo.AddFileAsync(fileEntity);
 
                 return Ok(response);
             }
@@ -119,18 +119,6 @@ namespace Stargate.API.Controllers
             };
 
             return fileEntity;
-        }
-
-        private async Task<int> UpdatePost(Data.Entities.File fileEntity)
-        {
-            var existingFile = await _repo.GetFileByFileNameAsync(fileEntity.FileName);
-
-            if (existingFile != null)
-                return existingFile.Id;
-
-            await _repo.AddFileAsync(fileEntity);
-
-            return fileEntity.Id;
         }
     }
 }
