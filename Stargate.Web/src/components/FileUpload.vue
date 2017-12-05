@@ -1,5 +1,5 @@
 <template>
-  <div class="notification">
+  <div class="file-upload notification">
     <form enctype="multipart/form-data">
       <div class="file has-name is-fullwidth is-info">
         <label class="file-label">
@@ -44,6 +44,8 @@
 import {FileApi} from '../services/file-upload.service';
 import Router from '../router';
 
+const SERVER_UNAVAILABLE = "Unable to reach the upload service. Please be sure the service is running, and that the hostname and port are properly configured."
+
 export default {
   name: "file-upload",
   data() {
@@ -65,11 +67,18 @@ export default {
     save(formData) {
       let self = this;
       self.isLoading = true;
+      self.$alert.hide(); // clear out any existing alerts
+
       FileApi.upload(formData)
         .then(function(response) {
           Router.push({name: 'File View', params: { id: response.data.id }});
         })
         .catch(function(error) {
+          if (!error.status) {
+            self.$alert.danger({ 
+              duration: false, 
+              message: SERVER_UNAVAILABLE})
+          }
           console.log(error);          
         })
         // finally
@@ -92,6 +101,15 @@ export default {
   },
   created() {
     this.reset();
+  },
+  mounted() {
+    this.$alert.hide()
   }
 };
 </script>
+
+<style lang="scss">
+.file-upload {
+  margin-top: 60px;
+}
+</style>

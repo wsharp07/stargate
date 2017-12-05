@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <vue-alert></vue-alert>
     <router-view/>
   </div>
 </template>
@@ -18,6 +19,6 @@ $color: #2c3e50;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: $color;
-  margin-top: 60px;
+  margin-top: 20px;
 }
 </style>

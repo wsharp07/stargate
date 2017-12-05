@@ -48,6 +48,8 @@ import { FileApi } from "../services/file-upload.service";
 import { FORMATTER } from "../services/formatter.service";
 import Router from "../router";
 
+const SERVER_UNAVAILABLE = "Unable to reach the upload service. Please be sure the service is running, and that the hostname and port are properly configured."
+
 export default {
   name: "file-view",
   data() {
@@ -65,11 +67,23 @@ export default {
   },
   created() {
     let self = this;
-    FileApi.getById(this.id).then(function(response) {
-      self.fileUri = response.data.externalUri;
-      self.fileName = response.data.fileName;
-      self.fileSizeBytes = response.data.fileSizeBytes;
-    });
+    FileApi.getById(this.id)
+      .then(function(response) {
+        self.fileUri = response.data.externalUri;
+        self.fileName = response.data.fileName;
+        self.fileSizeBytes = response.data.fileSizeBytes;
+      })
+      .catch(function (error) {
+        if (!error.status) {
+            self.$alert.danger({ 
+              duration: false, 
+              message: SERVER_UNAVAILABLE})
+        }
+        console.log(error);
+      });
+  },
+  mounted () {
+    this.$alert.hide()
   },
   methods: {
     copyToClipboard(e) {
