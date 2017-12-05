@@ -14,6 +14,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
+    "@vuejs-pt/vue-alert": "^1.2.2",
     "axios": "^0.17.0",
     "bulma": "^0.6.0",
     "vee-validate": "^2.0.0-rc.21",

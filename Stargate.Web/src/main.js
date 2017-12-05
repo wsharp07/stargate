@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+import VueAlert from '@vuejs-pt/vue-alert'
 import VeeValidate from 'vee-validate';
 
 // Require the main Sass manifest file
@@ -16,6 +17,7 @@ const veeConfig = {
 };
 
 Vue.use(VeeValidate, veeConfig);
+Vue.use(VueAlert);
 
 const dict = {
   en: {
