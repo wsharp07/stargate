@@ -12,12 +12,14 @@ namespace Stargate.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -25,10 +27,21 @@ namespace Stargate.API
             services.AddMvc();
             services.AddCors();
             // Database
-            var connectionString = Configuration.GetConnectionString("StargateContext");
 
-            services.AddDbContext<StargateContext>(options =>
-                options.UseSqlite(connectionString));
+            if (Environment.IsDevelopment())
+            {
+                var connectionString = Configuration.GetConnectionString("StargateContext");
+
+                services.AddDbContext<StargateContext>(options =>
+                    options.UseSqlite(connectionString));
+            }
+            else
+            {
+                var connectionString = Configuration.GetConnectionString("StargateContext");
+                services.AddDbContext<StargateContext>(options => 
+                    options.UseSqlServer(connectionString));
+            }
+            
 
             services.AddAutoMapper();
 
@@ -42,11 +55,12 @@ namespace Stargate.API
             {
                 app.UseDeveloperExceptionPage();
 
-                using (var scope = app.ApplicationServices.CreateScope())
-                {
-                    var seeder = scope.ServiceProvider.GetService<StargateSeeder>();
-                    seeder.Seed();
-                }
+                
+            }
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var seeder = scope.ServiceProvider.GetService<StargateSeeder>();
+                seeder.Seed();
             }
 
             app.UseCors(
