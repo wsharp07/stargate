@@ -1,6 +1,7 @@
 # Stargate File Upload Service
 ### A VueJS interface and .NET Core API for uploading files to storage
-<img src="https://ares3.visualstudio.com/_apis/public/build/definitions/5b5391a8-01e1-46ad-8c3d-57f3ba63f0ea/2/badge"/>
+[![build status](https://ares3.visualstudio.com/_apis/public/build/definitions/5b5391a8-01e1-46ad-8c3d-57f3ba63f0ea/2/badge)](https://ares3.visualstudio.com/stargate/_build/index?definitionId=2)
+[![stargate demo](https://img.shields.io/badge/stargate-demo-blue.svg)](https://stargate.thesharpdev.com)
 
 Currently supported File Storage Backend's
 
